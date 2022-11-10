@@ -2,11 +2,14 @@
 using EventScheduler.Services.Model.Event;
 using EventScheduler.Services.Model.Participant;
 using EventScheduler.Services.Model.Speaker;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using EventScheduler.Services.Exceptions;
 
 namespace EventScheduler.Services.Services
 {
@@ -21,6 +24,8 @@ namespace EventScheduler.Services.Services
         IEnumerable<object> GetEvents(string userId);
         IEnumerable<ParticipantViewModel> GetParticipantsByEvent(string userId, Guid eventId);
         IEnumerable<SpeakerViewModel> GetSpeakersByEvent(string userId, Guid eventId);
+        IEnumerable<object> GetExternalEvents(string userId);
+
     }
 
     public class EventDataService : IEventDataService
@@ -157,6 +162,17 @@ namespace EventScheduler.Services.Services
             _db.SaveChanges();
         }
 
-
+        public IEnumerable<object> GetExternalEvents(string userId)
+        {
+            //For demo purposes only.
+            //This method gets a list of events from google calendar. Here we would call the google api and if something goes wrong we return a custom exception
+            //For demo purposes we are only going to throw the error to demonstrate the error
+            throw new ExternalDependencyException(HttpStatusCode.FailedDependency, new ProblemDetails
+            {
+                Detail = "Failed Dependency",
+                Status = (int)HttpStatusCode.FailedDependency,
+                Type = "http://errrocodes.com/failedependency"
+            });
+        }
     }
 }

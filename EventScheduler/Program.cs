@@ -10,6 +10,9 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+using EventScheduler.Filters;
+using EventScheduler.Problems;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -71,6 +74,7 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddTransient<ProblemDetailsFactory, SampleProblemsFactory>();
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -93,7 +97,18 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]))
     };
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ExternalDependencyExceptionFilter>();
+}).ConfigureApiBehaviorOptions(options =>
+{
+    options.ClientErrorMapping[StatusCodes.Status500InternalServerError] = new Microsoft.AspNetCore.Mvc.ClientErrorData
+    {
+        Link = "https://httpstatuses.com/500",
+        Title = "Something went wrong internally, please contact support"
+    };
+    options.ClientErrorMapping[StatusCodes.Status401Unauthorized].Link = "https://httpstatuses.com/401";
+});
 
 var app = builder.Build();
 

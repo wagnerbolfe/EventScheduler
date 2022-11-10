@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EventScheduler.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("[controller]")]
     [ApiController]
     [AllowAnonymous]

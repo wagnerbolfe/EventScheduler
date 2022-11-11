@@ -10,6 +10,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using EventScheduler.Services.Exceptions;
+using EventScheduler.Common.Exceptions;
 
 namespace EventScheduler.Services.Services
 {
@@ -167,12 +168,12 @@ namespace EventScheduler.Services.Services
             //For demo purposes only.
             //This method gets a list of events from google calendar. Here we would call the google api and if something goes wrong we return a custom exception
             //For demo purposes we are only going to throw the error to demonstrate the error
-            throw new ExternalDependencyException(HttpStatusCode.FailedDependency, new ProblemDetails
+            throw new DefaultEventSchedulerException
             {
-                Detail = "Failed Dependency",
-                Status = (int)HttpStatusCode.FailedDependency,
-                Type = "http://errrocodes.com/failedependency"
-            });
+                ErrorCode = 10,
+                HttpStatusCode = HttpStatusCode.FailedDependency,
+                Message = "Failed to caall Google API"
+            };
         }
     }
 }

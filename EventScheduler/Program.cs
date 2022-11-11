@@ -13,6 +13,7 @@ using System.Text;
 using EventScheduler.Filters;
 using EventScheduler.Problems;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using EventScheduler.Common.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -73,8 +74,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-
 builder.Services.AddTransient<ProblemDetailsFactory, SampleProblemsFactory>();
+builder.Services.AddLogging();
+
 // Adding Authentication
 builder.Services.AddAuthentication(options =>
 {
@@ -121,7 +123,8 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.AddErrorHandler();
+    //app.AddErrorHandler(app.Services.GetService<ILogger<IEventSchedulerException>>());
+    app.UseMiddleware<CustomErrorMiddleWare>();
 }
 
 app.UseHttpsRedirection();

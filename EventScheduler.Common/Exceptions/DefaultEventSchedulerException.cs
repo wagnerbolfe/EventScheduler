@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace EventScheduler.Common.Exceptions
 {
@@ -8,6 +9,9 @@ namespace EventScheduler.Common.Exceptions
         public HttpStatusCode? HttpStatusCode { get; set; }
         public int ErrorCode { get; set; }
         public string Message { get; set; }
+
+        public EventId EventId => new EventId(100, "Default Error");
+
 
         public string ToJson()
         {
